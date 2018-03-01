@@ -1,12 +1,28 @@
 const express = require('express')
 const sse = require('sse-broadcast')()
-const app = express();
-app.get('/stream', (req, res) => {
-    sse.subscribe('channel', res)
+const app = express()
+const { promisify } = require('util')
+const smi = promisify(require('./smi'))
+
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*')
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  )
+  next()
 })
 
-setInterval(() => {
-    sse.publish('channel', 'update', { xoxo: 42 })
-}, 5000)
+app.get('/stream', (req, res) => {
+  setInterval(async () => {
+    const { nvidia_smi_log: { gpu } } = await smi()
+    sse.sendEvent(res, 'message', JSON.stringify(gpu))
+    console.log('update')
+  }, 5000)
+})
 
-app.listen(8000);
+app.get('/', (req, res) => {
+  res.send('ok')
+})
+
+app.listen(5000, '0.0.0.0')
