@@ -1,0 +1,12 @@
+{
+  "name": "firemonitor",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Felix Yadomi",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.2",
+    "node-nvidia-smi": "^1.0.0",
+    "sse-broadcast": "^0.5.1"
+  }
+}
